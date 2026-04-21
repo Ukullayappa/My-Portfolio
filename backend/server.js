@@ -10,11 +10,18 @@ app.use(express.json())
 
 app.use(cors({
 origin: '*',
-methods: ['GET', 'POST', 'PUT', 'DELETE'],
-allowedHeaders: ['Content-Type'],
+methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+allowedHeaders: ['Content-Type']
 }))
 
 app.options('*', cors())
+
+app.use((req, res, next) => {
+res.header('Access-Control-Allow-Origin', '*')
+res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+res.header('Access-Control-Allow-Headers', 'Content-Type')
+next()
+})
 
 async function initDB() {
 try {
@@ -40,7 +47,6 @@ app.post('/api/contact', async (req, res) => {
 try {
 const { name, email, subject, message } = req.body
 
-```
 if (!name || !email || !message) {
   return res.status(400).json({ error: 'Missing fields' })
 }
@@ -52,9 +58,9 @@ await pool.query(
 )
 
 res.status(200).json({ success: true })
-```
 
 } catch (err) {
+console.error(err)
 res.status(500).json({ error: 'Server error' })
 }
 })
