@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
-
+import 'bootstrap/dist/css/bootstrap.min.css'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
