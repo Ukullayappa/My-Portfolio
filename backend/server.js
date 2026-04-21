@@ -1,12 +1,8 @@
-
 const express = require('express')
 const cors = require('cors')
 const pool = require('./db')
 require('dotenv').config()
 
-console.log("SERVER FILE LOADED")
-console.log("POOL VALUE:", pool)
-console.log("TYPEOF pool.query:", typeof pool.query)
 const app = express()
 const PORT = process.env.PORT || 5000
 
@@ -35,6 +31,7 @@ await pool.query(`       CREATE TABLE IF NOT EXISTS contact_messages (
         email VARCHAR(150) NOT NULL,
         subject VARCHAR(200),
         message TEXT NOT NULL,
+        is_read BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `)
@@ -68,48 +65,43 @@ console.error(err)
 res.status(500).json({ error: 'Server error' })
 }
 })
+
 app.get('/api/messages', async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT * FROM contact_messages ORDER BY created_at DESC'
-    )
-    res.json(result.rows)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Server error' })
-  }
+try {
+const result = await pool.query(
+'SELECT * FROM contact_messages ORDER BY created_at DESC'
+)
+res.json(result.rows)
+} catch (err) {
+console.error(err)
+res.status(500).json({ error: 'Server error' })
+}
 })
+
 app.delete('/api/messages/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-
-    await pool.query(
-      'DELETE FROM contact_messages WHERE id = $1',
-      [id]
-    )
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Server error' })
-  }
+try {
+const { id } = req.params
+await pool.query('DELETE FROM contact_messages WHERE id = $1', [id])
+res.json({ success: true })
+} catch (err) {
+console.error(err)
+res.status(500).json({ error: 'Server error' })
+}
 })
+
 app.put('/api/messages/:id/read', async (req, res) => {
-  try {
-    const { id } = req.params
-
-    await pool.query(
-      'UPDATE contact_messages SET is_read = true WHERE id = $1',
-      [id]
-    )
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Server error' })
-  }
+try {
+const { id } = req.params
+await pool.query(
+'UPDATE contact_messages SET is_read = true WHERE id = $1',
+[id]
+)
+res.json({ success: true })
+} catch (err) {
+console.error(err)
+res.status(500).json({ error: 'Server error' })
+}
 })
-
 
 initDB().then(() => {
 app.listen(PORT, () => {
