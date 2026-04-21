@@ -68,6 +68,17 @@ console.error(err)
 res.status(500).json({ error: 'Server error' })
 }
 })
+app.get('/api/messages', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM contact_messages ORDER BY created_at DESC'
+    )
+    res.json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
 
 initDB().then(() => {
 app.listen(PORT, () => {
