@@ -1,11 +1,12 @@
-import pkg from 'pg';
-const { Pool } = pkg;
+const { Pool } = require('pg')
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+  ssl: { rejectUnauthorized: false }
+})
 
-export default pool;
+console.log("DB FILE LOADED")
+console.log("POOL TYPE:", typeof pool)
+console.log("HAS QUERY:", typeof pool.query)
+
+module.exports = pool

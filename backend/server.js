@@ -1,8 +1,12 @@
+
 const express = require('express')
 const cors = require('cors')
 const pool = require('./db')
 require('dotenv').config()
 
+console.log("SERVER FILE LOADED")
+console.log("POOL VALUE:", pool)
+console.log("TYPEOF pool.query:", typeof pool.query)
 const app = express()
 const PORT = process.env.PORT || 5000
 
