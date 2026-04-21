@@ -1,47 +1,56 @@
-import { Routes, Route } from 'react-router-dom'
-import { useState } from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import About from './components/About'
-import Skills from './components/Skills'
-import Projects from './components/Projects'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import Admin from './Admin'
-import Login from './Login'
+import React, { useState } from 'react'
 
-function Home() {
-  return (
-    <>
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Contact />
-      </main>
-      <Footer />
-    </>
-  )
-}
+function Login({ onLogin }) {
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
-function AdminProtected() {
-  const isAuth = localStorage.getItem('admin_auth') === 'true'
-
-  if (!isAuth) {
-    return <Login onLogin={() => window.location.reload()} />
+  const handleLogin = () => {
+    if (password === 'kullayappa123@') {
+      localStorage.setItem('admin_auth', 'true')
+      onLogin()
+    } else {
+      setError('Incorrect password')
+    }
   }
 
-  return <Admin />
-}
-
-export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/admin" element={<AdminProtected />} />
-    </Routes>
+    <div className="vh-100 d-flex justify-content-center align-items-center bg-dark">
+      <div className="card shadow-lg p-4 text-center" style={{ width: '360px', borderRadius: '15px' }}>
+        
+        <h2 className="mb-2 fw-bold">Admin Panel</h2>
+        <p className="text-muted mb-4">Secure login</p>
+
+        <div className="form-floating mb-3">
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setError('')
+            }}
+          />
+          <label htmlFor="password">Password</label>
+        </div>
+
+        <button 
+          onClick={handleLogin} 
+          className="btn btn-primary w-100 fw-semibold"
+        >
+          Login
+        </button>
+
+        {error && (
+          <div className="alert alert-danger mt-3 py-2">
+            {error}
+          </div>
+        )}
+
+      </div>
+    </div>
   )
 }
+
+export default Login
