@@ -79,6 +79,37 @@ app.get('/api/messages', async (req, res) => {
     res.status(500).json({ error: 'Server error' })
   }
 })
+app.delete('/api/messages/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    await pool.query(
+      'DELETE FROM contact_messages WHERE id = $1',
+      [id]
+    )
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+app.put('/api/messages/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    await pool.query(
+      'UPDATE contact_messages SET is_read = true WHERE id = $1',
+      [id]
+    )
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 
 initDB().then(() => {
 app.listen(PORT, () => {
