@@ -16,7 +16,7 @@ export default function Contact() {
     e.preventDefault()
     setStatus('sending')
     try {
-      await axios.post('/api/contact', form)
+      await axios.post('https://portfolio-backend-p9b8.onrender.com/api/contact', form)
       setStatus('success')
       setForm({ name: '', email: '', subject: '', message: '' })
     } catch {
