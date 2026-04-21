@@ -3,10 +3,12 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',   
+
   server: {
     proxy: {
       '/api': {
-        target: 'http://https://portfolio-backend-p9b8.onrender.com',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       }
     }
