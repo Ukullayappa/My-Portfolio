@@ -25,7 +25,7 @@ function Toast({ msg, visible, isError }) {
   )
 }
 
-export default function Admin() {
+export default function Admin({ onLogout }) {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
@@ -71,7 +71,9 @@ export default function Admin() {
   }
 
   const logout = () => {
+    if (onLogout) { onLogout(); return; }
     localStorage.removeItem('admin_auth')
+    localStorage.removeItem('admin_auth_v2')
     window.location.reload()
   }
 
