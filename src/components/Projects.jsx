@@ -1,15 +1,16 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { Badge, Button, Card, Col, Container, Dropdown, Row } from 'react-bootstrap'
 import { FaArrowRight, FaCode, FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
 
 const projects = [
   {
     title: 'Hub Electro E-Commerce',
     description:
-      'An electronics storefront with product browsing, cart flow, and a clean responsive frontend experience deployed online.',
+      'An electronics e-commerce platform with product browsing, cart flow, and a deployed split architecture using Vercel for the frontend and Render for the backend.',
     tags: ['React', 'Bootstrap', 'Node.js', 'PostgreSQL'],
-    github: 'https://github.com/Ukullayappa',
+    frontendRepo: 'https://github.com/Ukullayappa/electrohub-frontend',
+    backendRepo: 'https://github.com/Ukullayappa/electrohub-backend',
     live: 'https://hubelectro.vercel.app/',
     status: 'Live Project',
   },
@@ -30,8 +31,9 @@ const comingSoon = [
 
 function ProjectCard({ item, index, inView, isPlanned = false }) {
   return (
-    <Col lg={4} md={6}>
+    <Col lg={4} md={6} className="d-flex">
       <motion.div
+        className="w-100 h-100"
         initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.5, delay: index * 0.12 }}
@@ -50,38 +52,55 @@ function ProjectCard({ item, index, inView, isPlanned = false }) {
             </div>
 
             <h3>{item.title}</h3>
-            <p>{isPlanned ? item.desc : item.description}</p>
+            <p className="project-card-description">{isPlanned ? item.desc : item.description}</p>
 
-            <div className="d-flex flex-wrap gap-2 mb-4">
+            <div className="project-tags-row mb-4">
               {item.tags.map((tag) => (
                 <span key={tag} className="project-tag">{tag}</span>
               ))}
             </div>
 
-            <div className="mt-auto d-flex gap-2 flex-wrap">
+            <div className="mt-auto project-card-actions">
               {!isPlanned && item.live && (
                 <Button
                   as="a"
                   href={item.live}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-primary-custom"
+                  className="btn-primary-custom project-action-btn"
                 >
                   <FaArrowRight size={12} />
                   Open Project
                 </Button>
               )}
 
-              <Button
-                as="a"
-                href={item.github || 'https://github.com/Ukullayappa'}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-outline-custom"
-              >
-                {isPlanned ? <FaCode size={12} /> : <FaGithub size={12} />}
-                {isPlanned ? 'View Profile' : 'GitHub'}
-              </Button>
+              {!isPlanned ? (
+                <Dropdown drop="up" align="end">
+                  <Dropdown.Toggle className="project-action-btn project-repo-toggle">
+                    <FaGithub size={12} />
+                    Select Repo
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className="project-repo-menu">
+                    <Dropdown.Item href={item.frontendRepo} target="_blank" rel="noreferrer">
+                      Frontend Repo
+                    </Dropdown.Item>
+                    <Dropdown.Item href={item.backendRepo} target="_blank" rel="noreferrer">
+                      Backend Repo
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              ) : (
+                <Button
+                  as="a"
+                  href={item.github || 'https://github.com/Ukullayappa'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-outline-custom project-action-btn"
+                >
+                  <FaCode size={12} />
+                  View Profile
+                </Button>
+              )}
             </div>
           </Card.Body>
         </Card>

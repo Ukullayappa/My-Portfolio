@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button, Container, Nav, Navbar as BootstrapNavbar, Offcanvas } from 'react-bootstrap'
-import { FaEnvelope, FaLinkedinIn } from 'react-icons/fa'
+import { FaDownload, FaEnvelope, FaLinkedinIn } from 'react-icons/fa'
 
 const links = ['home', 'about', 'skills', 'projects', 'contact']
 
@@ -305,6 +305,19 @@ export default function Navbar() {
             >
               <FaEnvelope size={13} />
               ukullayappa1@gmail.com
+            </Button>
+
+            <Button
+              as="a"
+              href="/Uravakonda-Kullayappa-Resume.docx"
+              download="Uravakonda-Kullayappa-Resume.docx"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-outline-custom"
+              style={{ width: '100%', justifyContent: 'center', borderRadius: 999 }}
+            >
+              <FaDownload size={13} />
+              Download Resume
             </Button>
           </div>
         </Offcanvas.Body>

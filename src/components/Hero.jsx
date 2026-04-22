@@ -67,12 +67,14 @@ export default function Hero() {
               </Button>
               <Button
                 as="a"
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                href="/Uravakonda-Kullayappa-Resume.docx"
+                download="Uravakonda-Kullayappa-Resume.docx"
+                target="_blank"
+                rel="noreferrer"
                 className="btn-text-google hero-resume-link"
               >
                 <FaDownload size={14} />
-                Resume Coming Soon
+                Download Resume
               </Button>
             </motion.div>
 

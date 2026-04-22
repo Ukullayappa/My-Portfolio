@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -9,47 +10,111 @@ import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import Admin from './Admin'
+
 const ADMIN_USERNAME = 'kullayappa'
 const ADMIN_PASSWORD = 'kullayappa123@'
-const SESSION_DURATION_MS = 2 * 60 * 60 * 1000  // 2 hours
-const MAX_ATTEMPTS      = 5
-const LOCKOUT_MS        = 10 * 60 * 1000         // 10 minutes
-const AUTH_KEY    = 'admin_auth_v2'
-const ATTEMPT_KEY = 'admin_attempts'
+const SESSION_DURATION_MS = 2 * 60 * 60 * 1000
+const IDLE_TIMEOUT_MS = 20 * 60 * 1000
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 10 * 60 * 1000
+const AUTH_KEY = 'admin_auth_v3'
+const ATTEMPT_KEY = 'admin_attempts_v2'
 
-function saveSession()   { localStorage.setItem(AUTH_KEY, JSON.stringify({ ts: Date.now() })) }
-function clearSession()  { localStorage.removeItem(AUTH_KEY) }
-function isSessionValid() {
+function getDeviceSignature() {
+  return `${navigator.userAgent}|${navigator.language}|${window.screen.width}x${window.screen.height}`
+}
+
+function saveSession(username) {
+  localStorage.setItem(
+    AUTH_KEY,
+    JSON.stringify({
+      username,
+      issuedAt: Date.now(),
+      lastActiveAt: Date.now(),
+      signature: getDeviceSignature(),
+    })
+  )
+}
+
+function clearSession() {
+  localStorage.removeItem(AUTH_KEY)
+}
+
+function readSession() {
   try {
-    const s = JSON.parse(localStorage.getItem(AUTH_KEY))
-    return s && Date.now() - s.ts < SESSION_DURATION_MS
-  } catch { return false }
+    return JSON.parse(localStorage.getItem(AUTH_KEY))
+  } catch {
+    return null
+  }
+}
+
+function touchSession() {
+  const session = readSession()
+  if (!session) return
+  localStorage.setItem(
+    AUTH_KEY,
+    JSON.stringify({
+      ...session,
+      lastActiveAt: Date.now(),
+    })
+  )
+}
+
+function isSessionValid() {
+  const session = readSession()
+  if (!session) return false
+
+  const now = Date.now()
+  const issuedFresh = now - session.issuedAt < SESSION_DURATION_MS
+  const activeFresh = now - session.lastActiveAt < IDLE_TIMEOUT_MS
+  const sameDevice = session.signature === getDeviceSignature()
+  const sameUser = session.username === ADMIN_USERNAME
+
+  return issuedFresh && activeFresh && sameDevice && sameUser
 }
 
 function getAttemptState() {
-  try { return JSON.parse(localStorage.getItem(ATTEMPT_KEY)) || { count: 0, lockedAt: null } }
-  catch { return { count: 0, lockedAt: null } }
+  try {
+    return JSON.parse(localStorage.getItem(ATTEMPT_KEY)) || { count: 0, lockedAt: null }
+  } catch {
+    return { count: 0, lockedAt: null }
+  }
 }
-function saveAttemptState(s) { localStorage.setItem(ATTEMPT_KEY, JSON.stringify(s)) }
-function clearAttempts()     { localStorage.removeItem(ATTEMPT_KEY) }
+
+function saveAttemptState(state) {
+  localStorage.setItem(ATTEMPT_KEY, JSON.stringify(state))
+}
+
+function clearAttempts() {
+  localStorage.removeItem(ATTEMPT_KEY)
+}
+
 function EyeIcon({ open }) {
-  return open
-    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+  return open ? (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ) : (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  )
 }
+
 function Login({ onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [showPwd,  setShowPwd]  = useState(false)
-  const [error,    setError]    = useState('')
-  const [loading,  setLoading]  = useState(false)
+  const [showPwd, setShowPwd] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [attempts, setAttempts] = useState(getAttemptState)
-  const [tick,     setTick]     = useState(0)   // forces re-render for countdown
+  const [tick, setTick] = useState(0)
 
-  // Countdown ticker
   useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 1000)
-    return () => clearInterval(t)
+    const timer = setInterval(() => setTick((value) => value + 1), 1000)
+    return () => clearInterval(timer)
   }, [])
 
   const lockedRemaining = () => {
@@ -60,225 +125,344 @@ function Login({ onLogin }) {
 
   const isLocked = lockedRemaining() > 0
 
-  const formatTime = (secs) => {
-    const m = Math.floor(secs / 60)
-    const s = secs % 60
-    return `${m}:${String(s).padStart(2, '0')}`
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${minutes}:${String(secs).padStart(2, '0')}`
   }
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event?.preventDefault()
     if (isLocked) return
+
     setLoading(true)
     setError('')
 
-    // Simulate a tiny network-like delay (prevents instant brute-force timing)
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 300))
+    await new Promise((resolve) => setTimeout(resolve, 550 + Math.random() * 350))
 
-    if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const validUser = username.trim().toLowerCase() === ADMIN_USERNAME
+    const validPassword = password === ADMIN_PASSWORD
+
+    if (validUser && validPassword) {
       clearAttempts()
-      saveSession()
+      saveSession(ADMIN_USERNAME)
       onLogin()
-    } else {
-      const current = getAttemptState()
-      const newCount = current.count + 1
-      const newState = {
-        count: newCount,
-        lockedAt: newCount >= MAX_ATTEMPTS ? Date.now() : current.lockedAt,
-      }
-      saveAttemptState(newState)
-      setAttempts(newState)
-
-      const left = MAX_ATTEMPTS - newCount
-      if (newCount >= MAX_ATTEMPTS) {
-        setError(`Too many failed attempts. Locked for ${formatTime(LOCKOUT_MS / 1000)}.`)
-      } else if (left <= 2) {
-        setError(`Incorrect credentials. ${left} attempt${left === 1 ? '' : 's'} remaining.`)
-      } else {
-        setError('Incorrect username or password.')
-      }
+      return
     }
-    setLoading(false)
-  }
 
-  // ── Styles ────────────────────────────────────────────────
-  const s = {
-    wrap: {
-      minHeight: '100vh', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', padding: 20,
-      background: 'linear-gradient(160deg, #060d1a 0%, #0f2040 55%, #0a1628 100%)',
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-    },
-    glow: {
-      position: 'absolute', width: 340, height: 340, borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)',
-      top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-      pointerEvents: 'none',
-    },
-    card: {
-      position: 'relative', zIndex: 1, width: '100%', maxWidth: 420,
-      background: 'rgba(255,255,255,0.035)',
-      backdropFilter: 'blur(24px)',
-      border: '1px solid rgba(255,255,255,0.10)',
-      borderRadius: 20,
-      padding: '44px 40px 40px',
-      boxShadow: '0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
-    },
-    badge: {
-      display: 'inline-flex', alignItems: 'center', gap: 7,
-      background: 'rgba(37,99,235,0.18)', border: '1px solid rgba(37,99,235,0.35)',
-      borderRadius: 999, padding: '5px 14px',
-      fontSize: 11, color: '#93c5fd', fontWeight: 600, letterSpacing: '0.08em',
-      textTransform: 'uppercase', marginBottom: 24,
-    },
-    h1: { fontSize: 26, fontWeight: 800, color: '#f1f5f9', marginBottom: 6, letterSpacing: '-0.03em' },
-    sub: { fontSize: 13, color: '#64748b', marginBottom: 32 },
-    label: { display: 'block', fontSize: 12, fontWeight: 600, color: '#94a3b8', marginBottom: 7, letterSpacing: '0.05em', textTransform: 'uppercase' },
-    inputWrap: { position: 'relative', marginBottom: 18 },
-    input: {
-      width: '100%', padding: '13px 16px', boxSizing: 'border-box',
-      borderRadius: 10, fontSize: 14, color: '#f1f5f9',
-      background: 'rgba(255,255,255,0.06)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-    },
-    inputPwd: {
-      width: '100%', padding: '13px 44px 13px 16px', boxSizing: 'border-box',
-      borderRadius: 10, fontSize: 14, color: '#f1f5f9',
-      background: 'rgba(255,255,255,0.06)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-    },
-    eyeBtn: {
-      position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
-      background: 'none', border: 'none', cursor: 'pointer',
-      color: '#64748b', padding: 0, display: 'flex',
-    },
-    btn: {
-      width: '100%', padding: '14px', borderRadius: 10, border: 'none',
-      background: loading || isLocked ? '#1e3a5f' : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-      color: loading || isLocked ? '#64748b' : '#fff',
-      fontSize: 15, fontWeight: 700, cursor: loading || isLocked ? 'not-allowed' : 'pointer',
-      letterSpacing: '-0.01em', marginTop: 8,
-      boxShadow: isLocked || loading ? 'none' : '0 4px 20px rgba(37,99,235,0.4)',
-      transition: 'all 0.2s',
-    },
-    errorBox: {
-      marginTop: 16, padding: '11px 14px',
-      background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-      borderRadius: 10, color: '#fca5a5', fontSize: 13,
-      display: 'flex', alignItems: 'flex-start', gap: 8,
-    },
-    lockBox: {
-      marginTop: 16, padding: '11px 14px',
-      background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)',
-      borderRadius: 10, color: '#fcd34d', fontSize: 13,
-      display: 'flex', alignItems: 'center', gap: 8,
-    },
-    divider: { borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 28, paddingTop: 16 },
-    hint: { fontSize: 11, color: '#334155', textAlign: 'center' },
+    const current = getAttemptState()
+    const newCount = current.count + 1
+    const newState = {
+      count: newCount,
+      lockedAt: newCount >= MAX_ATTEMPTS ? Date.now() : current.lockedAt,
+    }
+
+    saveAttemptState(newState)
+    setAttempts(newState)
+
+    const left = MAX_ATTEMPTS - newCount
+    if (newCount >= MAX_ATTEMPTS) {
+      setError(`Too many failed attempts. Access locked for ${formatTime(LOCKOUT_MS / 1000)}.`)
+    } else if (left <= 2) {
+      setError(`Invalid admin credentials. ${left} attempt${left === 1 ? '' : 's'} remaining.`)
+    } else {
+      setError('Invalid admin credentials.')
+    }
+
+    setLoading(false)
   }
 
   const remaining = lockedRemaining()
 
   return (
-    <div style={s.wrap}>
-      <div style={{ position: 'relative' }}>
-        <div style={s.glow} />
-        <div style={s.card}>
-          <div style={s.badge}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Secure Admin Access
-          </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(160deg, #06101d 0%, #0b1e38 48%, #10284a 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(circle at top left, rgba(37,99,235,0.18), transparent 28%), radial-gradient(circle at bottom right, rgba(201,168,76,0.16), transparent 24%)',
+          pointerEvents: 'none',
+        }}
+      />
 
-          <h1 style={s.h1}>Admin Portal</h1>
-          <p style={s.sub}>Portfolio message dashboard · restricted access</p>
-
-          {/* Username */}
-          <div style={s.inputWrap}>
-            <label style={s.label}>Username</label>
-            <input
-              type="text"
-              autoComplete="username"
-              value={username}
-              onChange={e => { setUsername(e.target.value); setError('') }}
-              onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              disabled={isLocked || loading}
-              style={s.input}
-              onFocus={e => { e.target.style.borderColor = 'rgba(37,99,235,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)' }}
-              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)'; e.target.style.boxShadow = 'none' }}
-              placeholder="Enter username"
-            />
-          </div>
-
-          {/* Password */}
-          <div style={s.inputWrap}>
-            <label style={s.label}>Password</label>
-            <input
-              type={showPwd ? 'text' : 'password'}
-              autoComplete="current-password"
-              value={password}
-              onChange={e => { setPassword(e.target.value); setError('') }}
-              onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              disabled={isLocked || loading}
-              style={s.inputPwd}
-              onFocus={e => { e.target.style.borderColor = 'rgba(37,99,235,0.6)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)' }}
-              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)'; e.target.style.boxShadow = 'none' }}
-              placeholder="Enter password"
-            />
-            <button style={s.eyeBtn} onClick={() => setShowPwd(v => !v)} tabIndex={-1} type="button">
-              <EyeIcon open={showPwd} />
-            </button>
-          </div>
-
-          {/* Attempt warning bar */}
-          {attempts.count > 0 && attempts.count < MAX_ATTEMPTS && !isLocked && (
-            <div style={{ marginBottom: 4 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#64748b', marginBottom: 5 }}>
-                <span>Attempts used</span>
-                <span style={{ color: attempts.count >= 3 ? '#fca5a5' : '#64748b' }}>
-                  {attempts.count} / {MAX_ATTEMPTS}
-                </span>
+      <Container style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+        <Row className="w-100 align-items-center g-4">
+          <Col lg={6}>
+            <div style={{ color: '#f8fafc', maxWidth: 540 }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 14px',
+                  borderRadius: 999,
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  marginBottom: 22,
+                }}
+              >
+                Protected Admin Access
               </div>
-              <div style={{ height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99 }}>
-                <div style={{
-                  height: '100%', borderRadius: 99,
-                  width: `${(attempts.count / MAX_ATTEMPTS) * 100}%`,
-                  background: attempts.count >= 4 ? '#ef4444' : attempts.count >= 3 ? '#f59e0b' : '#2563eb',
-                  transition: 'width 0.4s ease',
-                }} />
+
+              <h1
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
+                  lineHeight: 1.08,
+                  marginBottom: 16,
+                }}
+              >
+                Professional admin access for your portfolio dashboard
+              </h1>
+
+              <p
+                style={{
+                  color: 'rgba(241,245,249,0.76)',
+                  fontSize: '1rem',
+                  lineHeight: 1.8,
+                  marginBottom: 28,
+                  maxWidth: 500,
+                }}
+              >
+                Review contact submissions, manage unread messages, and keep your portfolio inbox organized through a cleaner secured panel.
+              </p>
+
+              <div style={{ display: 'grid', gap: 12 }}>
+                {[
+                  'Session expires automatically after 2 hours',
+                  'Idle timeout protects access after 20 minutes',
+                  'Failed login attempts trigger lockout protection',
+                  'Session is tied to the current browser/device signature',
+                ].map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      color: '#dbeafe',
+                      fontSize: '0.96rem',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #60a5fa, #e8c96a)',
+                        flexShrink: 0,
+                      }}
+                    />
+                    {item}
+                  </div>
+                ))}
               </div>
             </div>
-          )}
+          </Col>
 
-          {/* Login button */}
-          <button onClick={handleLogin} disabled={isLocked || loading} style={s.btn}
-            onMouseEnter={e => { if (!isLocked && !loading) e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
-          >
-            {loading ? 'Verifying…' : isLocked ? `🔒 Locked · ${formatTime(remaining)}` : 'Sign In'}
-          </button>
+          <Col lg={6}>
+            <Card
+              style={{
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 28,
+                background: 'rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(24px)',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.35)',
+                color: '#f8fafc',
+              }}
+            >
+              <Card.Body style={{ padding: '36px 34px' }}>
+                <div style={{ marginBottom: 26 }}>
+                  <div
+                    style={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'linear-gradient(135deg, rgba(37,99,235,0.28), rgba(201,168,76,0.22))',
+                      border: '1px solid rgba(255,255,255,0.16)',
+                      marginBottom: 16,
+                    }}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="11" width="18" height="10" rx="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </div>
 
-          {/* Lockout notice */}
-          {isLocked && (
-            <div style={s.lockBox}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Account locked. Try again in <strong>{formatTime(remaining)}</strong></span>
-            </div>
-          )}
+                  <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>Admin Login</h2>
+                  <p style={{ margin: 0, color: 'rgba(226,232,240,0.7)', lineHeight: 1.7 }}>
+                    Enter your admin credentials to access message management and portfolio inquiries.
+                  </p>
+                </div>
 
-          {/* Error */}
-          {error && !isLocked && (
-            <div style={s.errorBox}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{flexShrink:0,marginTop:1}}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-              <span>{error}</span>
-            </div>
-          )}
+                <Form onSubmit={handleLogin}>
+                  <Form.Group className="mb-3">
+                    <Form.Label style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#cbd5e1' }}>
+                      Username
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      autoComplete="username"
+                      disabled={isLocked || loading}
+                      value={username}
+                      onChange={(e) => {
+                        setUsername(e.target.value)
+                        setError('')
+                      }}
+                      placeholder="Enter admin username"
+                      style={{
+                        height: 50,
+                        borderRadius: 14,
+                        border: '1px solid rgba(255,255,255,0.14)',
+                        background: 'rgba(255,255,255,0.08)',
+                        color: '#f8fafc',
+                      }}
+                    />
+                  </Form.Group>
 
-          <div style={s.divider}>
-            <p style={s.hint}>Session expires after 2 hours of inactivity</p>
-          </div>
-        </div>
-      </div>
+                  <Form.Group className="mb-3">
+                    <Form.Label style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#cbd5e1' }}>
+                      Password
+                    </Form.Label>
+                    <div style={{ position: 'relative' }}>
+                      <Form.Control
+                        type={showPwd ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        disabled={isLocked || loading}
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value)
+                          setError('')
+                        }}
+                        placeholder="Enter admin password"
+                        style={{
+                          height: 50,
+                          borderRadius: 14,
+                          border: '1px solid rgba(255,255,255,0.14)',
+                          background: 'rgba(255,255,255,0.08)',
+                          color: '#f8fafc',
+                          paddingRight: 48,
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPwd((value) => !value)}
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          right: 14,
+                          transform: 'translateY(-50%)',
+                          border: 'none',
+                          background: 'transparent',
+                          color: '#94a3b8',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <EyeIcon open={showPwd} />
+                      </button>
+                    </div>
+                  </Form.Group>
+
+                  {attempts.count > 0 && attempts.count < MAX_ATTEMPTS && !isLocked && (
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>
+                        <span>Failed attempts</span>
+                        <span>{attempts.count} / {MAX_ATTEMPTS}</span>
+                      </div>
+                      <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 999 }}>
+                        <div
+                          style={{
+                            height: '100%',
+                            width: `${(attempts.count / MAX_ATTEMPTS) * 100}%`,
+                            borderRadius: 999,
+                            background: attempts.count >= 4 ? '#ef4444' : attempts.count >= 3 ? '#f59e0b' : '#60a5fa',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={isLocked || loading}
+                    style={{
+                      width: '100%',
+                      height: 52,
+                      borderRadius: 14,
+                      border: 'none',
+                      background: loading || isLocked ? '#274472' : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                      fontWeight: 700,
+                      letterSpacing: '0.01em',
+                    }}
+                  >
+                    {loading ? 'Verifying access...' : isLocked ? `Locked - ${formatTime(remaining)}` : 'Sign In to Admin Panel'}
+                  </Button>
+                </Form>
+
+                {isLocked && (
+                  <div
+                    style={{
+                      marginTop: 16,
+                      padding: '12px 14px',
+                      borderRadius: 14,
+                      background: 'rgba(251,191,36,0.12)',
+                      border: '1px solid rgba(251,191,36,0.24)',
+                      color: '#fde68a',
+                      fontSize: 14,
+                    }}
+                  >
+                    Account temporarily locked. Try again in <strong>{formatTime(remaining)}</strong>.
+                  </div>
+                )}
+
+                {error && !isLocked && (
+                  <div
+                    style={{
+                      marginTop: 16,
+                      padding: '12px 14px',
+                      borderRadius: 14,
+                      background: 'rgba(239,68,68,0.12)',
+                      border: '1px solid rgba(239,68,68,0.24)',
+                      color: '#fecaca',
+                      fontSize: 14,
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
+
+                <div
+                  style={{
+                    marginTop: 20,
+                    paddingTop: 16,
+                    borderTop: '1px solid rgba(255,255,255,0.08)',
+                    color: '#94a3b8',
+                    fontSize: 12,
+                    lineHeight: 1.7,
+                  }}
+                >
+                  Security note: this is still a client-side admin gate. For true production-grade security, move credential verification to a protected backend.
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }
@@ -291,14 +475,30 @@ function AdminRoute() {
     setAuthed(isSessionValid())
     setChecking(false)
 
-    // Auto-expire: check every minute
-    const t = setInterval(() => {
+    const validate = () => {
       if (!isSessionValid()) {
         clearSession()
         setAuthed(false)
       }
-    }, 60_000)
-    return () => clearInterval(t)
+    }
+
+    const touch = () => {
+      if (isSessionValid()) {
+        touchSession()
+      }
+    }
+
+    const interval = setInterval(validate, 60_000)
+    window.addEventListener('mousemove', touch)
+    window.addEventListener('keydown', touch)
+    window.addEventListener('click', touch)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('mousemove', touch)
+      window.removeEventListener('keydown', touch)
+      window.removeEventListener('click', touch)
+    }
   }, [])
 
   if (checking) return null
@@ -307,7 +507,10 @@ function AdminRoute() {
     return <Login onLogin={() => setAuthed(true)} />
   }
 
-  return <Admin onLogout={() => { clearSession(); setAuthed(false) }} />
+  return <Admin onLogout={() => {
+    clearSession()
+    setAuthed(false)
+  }} />
 }
 
 function Home() {
