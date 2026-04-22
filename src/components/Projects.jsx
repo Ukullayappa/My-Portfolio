@@ -1,212 +1,92 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { FaGithub, FaExternalLinkAlt, FaPlus, FaCode } from 'react-icons/fa'
+import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { FaArrowRight, FaCode, FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
+
 const projects = [
   {
-    title: 'E-Commerce App',
-    description: 'A full-featured online electronics store with product listings, cart, and a clean modern UI. Built with React and deployed on Vercel.',
-    tags: ['React', 'Node.js', 'PostgreSQL'],
+    title: 'Hub Electro E-Commerce',
+    description:
+      'An electronics storefront with product browsing, cart flow, and a clean responsive frontend experience deployed online.',
+    tags: ['React', 'Bootstrap', 'Node.js', 'PostgreSQL'],
     github: 'https://github.com/Ukullayappa',
     live: 'https://hubelectro.vercel.app/',
-    emoji: '🛒',
-    color: '#2563a8',
+    status: 'Live Project',
   },
 ]
 
 const comingSoon = [
-  { emoji: '🌐', title: 'Full Stack Web App', desc: 'A complete CRUD application with React frontend and Node.js + PostgreSQL backend.', tags: ['React', 'Node.js', 'PostgreSQL', 'Express'], github: 'https://github.com/Ukullayappa' },
-  { emoji: '📊', title: 'Dashboard Project', desc: 'An analytics dashboard with data visualization and user authentication.', tags: ['React', 'Bootstrap', 'REST API'], github: 'https://github.com/Ukullayappa' },
+  {
+    title: 'Live Chat Application',
+    desc: 'A real-time chat application with user authentication, instant messaging, online presence, and responsive conversation screens.',
+    tags: ['React', 'Node.js', 'Socket.IO', 'Express'],
+  },
+  {
+    title: 'Analytics Dashboard',
+    desc: 'A dashboard-oriented interface with data cards, reporting views, and modern responsive layout patterns.',
+    tags: ['React', 'Bootstrap', 'REST API'],
+  },
 ]
 
-/* ── Styles shared across both card types ── */
-const cardStyle = {
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  borderRadius: 12,
-  overflow: 'hidden',
-  background: 'var(--white)',
-  border: '1px solid var(--light-gray)',
-  boxShadow: '0 4px 20px rgba(10,22,40,0.07)',
-  transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-  cursor: 'pointer',
-}
-
-function ProjectCard({ project, index, inView }) {
-  const openLive = () => {
-    if (project.live) window.open(project.live, '_blank', 'noreferrer')
-  }
-  const openGithub = (e) => {
-    e.stopPropagation()           // don't trigger card click
-    if (project.github) window.open(project.github, '_blank', 'noreferrer')
-  }
-
+function ProjectCard({ item, index, inView, isPlanned = false }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="col-lg-4 col-md-6"
-    >
-      <div
-        style={cardStyle}
-        onClick={openLive}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'translateY(-5px)'
-          e.currentTarget.style.boxShadow = '0 12px 36px rgba(10,22,40,0.14)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(10,22,40,0.07)'
-        }}
-        title={project.live ? 'Click to open live demo' : ''}
+    <Col lg={4} md={6}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.5, delay: index * 0.12 }}
       >
-        {/* Header */}
-        <div style={{
-          background: `linear-gradient(135deg, var(--navy) 0%, ${project.color || 'var(--navy-light)'} 100%)`,
-          padding: '28px 24px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          minHeight: 110,
-        }}>
-          <span style={{ fontSize: '3rem' }}>{project.emoji}</span>
-          {project.live && (
-            <div style={{
-              position: 'absolute', top: 12, right: 12,
-              background: 'rgba(255,255,255,0.15)',
-              borderRadius: 100, padding: '4px 10px',
-              display: 'flex', alignItems: 'center', gap: 5,
-              color: '#fff', fontSize: '0.7rem', fontWeight: 600,
-              backdropFilter: 'blur(4px)',
-            }}>
-              <FaExternalLinkAlt size={9} /> Live
+        <Card className={`project-showcase-card h-100 border-0 ${isPlanned ? 'project-showcase-muted' : ''}`}>
+          <Card.Body className="d-flex flex-column">
+            <div className="project-card-top">
+              <Badge className={`project-status-badge ${isPlanned ? 'planned' : ''}`}>
+                {isPlanned ? 'In Progress' : item.status}
+              </Badge>
+              {!isPlanned && item.live && (
+                <a href={item.live} target="_blank" rel="noreferrer" className="project-inline-link">
+                  Live Demo <FaExternalLinkAlt size={11} />
+                </a>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Body */}
-        <div style={{ padding: '20px 20px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <h5 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--navy)', marginBottom: 8 }}>
-            {project.title}
-          </h5>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: 1.7, flex: 1, marginBottom: 14 }}>
-            {project.description}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {project.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
-          </div>
-        </div>
+            <h3>{item.title}</h3>
+            <p>{isPlanned ? item.desc : item.description}</p>
 
-        {/* Footer — GitHub button */}
-        <div style={{
-          borderTop: '1px solid var(--light-gray)',
-          padding: '12px 20px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            {project.live ? 'Click card to open site' : 'No live demo yet'}
-          </span>
-          <button
-            onClick={openGithub}
-            title="Open GitHub repository"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              background: 'var(--navy)',
-              color: '#fff',
-              border: 'none', borderRadius: 8,
-              padding: '7px 14px',
-              fontFamily: 'var(--font-body)', fontSize: '0.82rem', fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background 0.2s ease',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'var(--navy-accent)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'var(--navy)'}
-          >
-            <FaGithub size={14} /> GitHub
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
+            <div className="d-flex flex-wrap gap-2 mb-4">
+              {item.tags.map((tag) => (
+                <span key={tag} className="project-tag">{tag}</span>
+              ))}
+            </div>
 
-function ComingSoonCard({ item, index, inView }) {
-  const openGithub = (e) => {
-    e.stopPropagation()
-    if (item.github) window.open(item.github, '_blank', 'noreferrer')
-  }
+            <div className="mt-auto d-flex gap-2 flex-wrap">
+              {!isPlanned && item.live && (
+                <Button
+                  as="a"
+                  href={item.live}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary-custom"
+                >
+                  <FaArrowRight size={12} />
+                  Open Project
+                </Button>
+              )}
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="col-lg-4 col-md-6"
-    >
-      <div style={{ ...cardStyle, cursor: 'default', opacity: 0.88 }}>
-
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #1e3a5f 0%, #2a4a6e 100%)',
-          padding: '28px 24px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          minHeight: 110, position: 'relative',
-        }}>
-          <span style={{ fontSize: '2.8rem' }}>{item.emoji}</span>
-          <div style={{ position: 'absolute', top: 12, right: 12 }}>
-            <span className="coming-soon-badge">Coming Soon</span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: '20px 20px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <h5 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--navy)', marginBottom: 8 }}>
-            {item.title}
-          </h5>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: 1.7, flex: 1, marginBottom: 14 }}>
-            {item.desc}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {item.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
-          </div>
-        </div>
-
-        {/* Footer — GitHub button + In Development label */}
-        <div style={{
-          borderTop: '1px solid var(--light-gray)',
-          padding: '12px 20px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <span style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            fontFamily: 'var(--font-body)', fontSize: '0.78rem',
-            color: 'var(--text-muted)', fontWeight: 600,
-          }}>
-            <FaCode size={12} /> In Development
-          </span>
-          <button
-            onClick={openGithub}
-            title="Open GitHub profile"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              background: 'var(--navy)',
-              color: '#fff',
-              border: 'none', borderRadius: 8,
-              padding: '7px 14px',
-              fontFamily: 'var(--font-body)', fontSize: '0.82rem', fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background 0.2s ease',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'var(--navy-accent)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'var(--navy)'}
-          >
-            <FaGithub size={14} /> GitHub
-          </button>
-        </div>
-
-      </div>
-    </motion.div>
+              <Button
+                as="a"
+                href={item.github || 'https://github.com/Ukullayappa'}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-outline-custom"
+              >
+                {isPlanned ? <FaCode size={12} /> : <FaGithub size={12} />}
+                {isPlanned ? 'View Profile' : 'GitHub'}
+              </Button>
+            </div>
+          </Card.Body>
+        </Card>
+      </motion.div>
+    </Col>
   )
 }
 
@@ -215,53 +95,60 @@ export default function Projects() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="projects" className="section-padding" style={{ background: 'var(--off-white)' }}>
-      <div className="container" ref={ref}>
+    <section id="projects" className="section-padding section-soft">
+      <Container ref={ref}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="text-center mb-5"
         >
-          <p className="section-subtitle">My Work</p>
-          <h2 className="section-title">Projects</h2>
+          <p className="section-subtitle">Portfolio Highlights</p>
+          <h2 className="section-title">Projects that reflect my growing full stack skillset</h2>
           <div className="section-divider mx-auto" />
-          <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)', maxWidth: 520, margin: '0 auto', fontSize: '1rem' }}>
-            Projects are currently in development. Click any card to open the live site,
-            or click the <strong>GitHub</strong> button to view the repository.
+          <p className="section-intro mx-auto">
+            These projects show the direction of my work: responsive interfaces,
+            practical backend integrations, and a focus on real-world usability.
           </p>
         </motion.div>
 
-        <div className="row g-4">
-          {/* Real projects (will show when added) */}
-          {projects.map((p, i) => (
-            <ProjectCard key={p.title} project={p} index={i} inView={inView} />
+        <Row className="g-4">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.title} item={project} index={index} inView={inView} />
           ))}
-
-          {/* Coming soon placeholders */}
-          {comingSoon.map((item, i) => (
-            <ComingSoonCard key={item.title} item={item} index={projects.length + i} inView={inView} />
+          {comingSoon.map((item, index) => (
+            <ProjectCard
+              key={item.title}
+              item={item}
+              index={projects.length + index}
+              inView={inView}
+              isPlanned
+            />
           ))}
-        </div>
+        </Row>
 
-        {/* Add project CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          style={{ textAlign: 'center', marginTop: 48 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="projects-footer-panel"
         >
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 12,
-            background: 'var(--white)', border: '2px dashed var(--light-gray)',
-            borderRadius: 8, padding: '20px 32px',
-            color: 'var(--text-muted)', fontFamily: 'var(--font-body)', fontSize: '0.92rem'
-          }}>
-            <FaPlus color="var(--navy-accent)" />
-            <span>More projects coming soon — check my <a href="https://github.com/Ukullayappa" target="_blank" rel="noreferrer" style={{ color: 'var(--navy-accent)', fontWeight: 700 }}>GitHub</a></span>
+          <div>
+            <span>Want to see more of my work?</span>
+            <strong>I regularly update my GitHub with learning projects and improvements.</strong>
           </div>
+          <Button
+            as="a"
+            href="https://github.com/Ukullayappa"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary-custom"
+          >
+            <FaGithub size={13} />
+            Visit GitHub
+          </Button>
         </motion.div>
-      </div>
+      </Container>
     </section>
   )
 }

@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { FaGraduationCap, FaCode, FaLightbulb, FaMapMarkerAlt } from 'react-icons/fa'
+import { Badge, Card, Col, Container, Row } from 'react-bootstrap'
+import { FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt } from 'react-icons/fa'
 
 const stats = [
-  { value: '2026', label: 'Graduating', icon: <FaGraduationCap size={20} /> },
-  { value: 'ECE', label: 'B.Tech Branch', icon: <FaCode size={20} /> },
-  { value: 'Full Stack', label: 'Specialization', icon: <FaLightbulb size={20} /> },
-  { value: 'AP', label: 'Andhra Pradesh', icon: <FaMapMarkerAlt size={20} /> },
+  { value: '2026', label: 'Graduation Year', icon: <FaGraduationCap size={18} /> },
+  { value: 'ECE', label: 'Academic Background', icon: <FaCode size={18} /> },
+  { value: 'Full Stack', label: 'Career Path', icon: <FaLightbulb size={18} /> },
+  { value: 'Andhra Pradesh', label: 'Location', icon: <FaMapMarkerAlt size={18} /> },
 ]
 
 export default function About() {
@@ -15,97 +15,86 @@ export default function About() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="about" className="section-padding" style={{ background: 'var(--off-white)' }}>
-      <div className="container" ref={ref}>
-        <div className="row align-items-center g-5">
-
-          {/* Left — Info */}
-          <div className="col-lg-6">
+    <section id="about" className="section-padding section-soft">
+      <Container ref={ref}>
+        <Row className="align-items-center g-4 g-lg-5">
+          <Col lg={6}>
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.7 }}
             >
               <p className="section-subtitle">Get To Know Me</p>
-              <h2 className="section-title">About Me</h2>
+              <h2 className="section-title">A developer focused on learning fast and building well</h2>
               <div className="section-divider" />
 
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: 1.85, marginBottom: 20 }}>
-                I'm <strong style={{ color: 'var(--navy)' }}>Uravakonda Kullayappa</strong>, a B.Tech Electronics & Communication Engineering
-                student at a reputed institute in Andhra Pradesh, graduating in 2026.
+              <p className="section-copy">
+                I'm <strong>Uravakonda Kullayappa</strong>, a B.Tech Electronics and
+                Communication Engineering student preparing to graduate in 2026 and
+                actively building a strong career in software development.
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: 1.85, marginBottom: 20 }}>
-                Though my core degree is ECE, I discovered my passion for software development early on —
-                specifically in building modern web applications. I've self-learned and practised
-                full-stack development with a focus on React, Node.js, Express, and PostgreSQL.
+              <p className="section-copy">
+                My academic background gave me discipline and analytical thinking,
+                while my hands-on development journey helped me build practical
+                skills in React, Bootstrap, Node.js, Express, and PostgreSQL.
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: 1.85, marginBottom: 36 }}>
-                I'm a quick learner, problem-solver, and team player eager to contribute to
-                real-world projects and grow as a developer. I'm actively looking for opportunities
-                where I can make an impact from day one.
+              <p className="section-copy mb-4">
+                I enjoy turning ideas into clean, responsive products and I'm looking
+                for opportunities where I can contribute, learn quickly, and grow into
+                a high-impact engineering role.
               </p>
 
-              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                <a href="mailto:ukullayappa1@gmail.com" className="btn-primary-custom">Let's Connect</a>
-                <a href="https://linkedin.com/in/u-kullayappa-57a326368" target="_blank" rel="noreferrer" className="btn-outline-custom">LinkedIn Profile</a>
+              <div className="d-flex flex-wrap gap-2">
+                <Badge className="about-badge-pill">Quick Learner</Badge>
+                <Badge className="about-badge-pill">Problem Solver</Badge>
+                <Badge className="about-badge-pill">Team Player</Badge>
+                <Badge className="about-badge-pill">Career Ready</Badge>
               </div>
             </motion.div>
-          </div>
+          </Col>
 
-          {/* Right — Stats Cards */}
-          <div className="col-lg-6">
-            <div className="row g-3">
-              {stats.map((s, i) => (
-                <div className="col-6" key={s.label}>
+          <Col lg={6}>
+            <Row xs={1} md={2} className="g-3">
+              {stats.map((item, index) => (
+                <Col key={item.label}>
                   <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.15 * i }}
-                    style={{
-                      background: 'var(--white)', border: '1.5px solid var(--light-gray)',
-                      borderRadius: 6, padding: '28px 22px', textAlign: 'center',
-                      boxShadow: '0 4px 16px rgba(10,22,40,0.06)',
-                      transition: 'all 0.3s',
-                    }}
-                    className="card-hover"
+                    transition={{ duration: 0.5, delay: 0.12 * index }}
                   >
-                    <div style={{ color: 'var(--navy-accent)', marginBottom: 10 }}>{s.icon}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--navy)', lineHeight: 1.1, marginBottom: 6 }}>
-                      {s.value}
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                      {s.label}
-                    </div>
+                    <Card className="about-stat-card h-100 border-0">
+                      <Card.Body>
+                        <div className="about-stat-icon">{item.icon}</div>
+                        <h3>{item.value}</h3>
+                        <p>{item.label}</p>
+                      </Card.Body>
+                    </Card>
                   </motion.div>
-                </div>
+                </Col>
               ))}
-            </div>
+            </Row>
 
-            {/* Education card */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 28 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              style={{
-                background: 'var(--navy)', borderRadius: 6, padding: '24px 28px', marginTop: 14,
-                boxShadow: '0 8px 32px rgba(10,22,40,0.18)',
-              }}
+              transition={{ duration: 0.55, delay: 0.55 }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <FaGraduationCap size={20} color="var(--gold)" />
-                <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, color: 'var(--gold)', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Education</span>
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--white)', fontSize: '1.15rem', marginBottom: 4 }}>
-                B.Tech — Electronics & Communication
-              </div>
-              <div style={{ fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>
-                Graduating 2026 · Andhra Pradesh, India
-              </div>
+              <Card className="about-summary-card border-0 mt-3">
+                <Card.Body>
+                  <div className="about-summary-top">
+                    <span>Current Focus</span>
+                    <strong>Internships - Entry-level roles - Freelance projects</strong>
+                  </div>
+                  <p>
+                    Building portfolio-quality interfaces, backend APIs, and complete
+                    CRUD applications with a strong focus on clean UI and practical development skills.
+                  </p>
+                </Card.Body>
+              </Card>
             </motion.div>
-          </div>
-
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     </section>
   )
 }
