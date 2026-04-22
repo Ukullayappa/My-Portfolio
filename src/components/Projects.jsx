@@ -8,22 +8,20 @@ import { FaGithub, FaExternalLinkAlt, FaPlus, FaCode } from 'react-icons/fa'
 // Just copy the template object and fill in your details
 // ────────────────────────────────────────────────────────────
 const projects = [
-  // TEMPLATE — Uncomment and fill in when you have a project:
-  // {
-  //   title: 'Your Project Name',
-  //   description: 'Short description of what the project does and what problem it solves.',
-  //   tags: ['React', 'Node.js', 'PostgreSQL'],
-  //   github: 'https://github.com/yourusername/project',
-  //   live: 'https://your-live-demo.com',       // clicking the card opens this
-  //   emoji: '🚀',                              // choose an emoji icon
-  //   color: '#2563a8',                          // accent color for the card header
-  // },
+  {
+    title: 'E-Commerce App',
+    description: 'A full-featured online electronics store with product listings, cart, and a clean modern UI. Built with React and deployed on Vercel.',
+    tags: ['React', 'Node.js', 'PostgreSQL'],
+    github: 'https://github.com/Ukullayappa',
+    live: 'https://hubelectro.vercel.app/',
+    emoji: '🛒',
+    color: '#2563a8',
+  },
 ]
 
 const comingSoon = [
   { emoji: '🌐', title: 'Full Stack Web App', desc: 'A complete CRUD application with React frontend and Node.js + PostgreSQL backend.', tags: ['React', 'Node.js', 'PostgreSQL', 'Express'], github: 'https://github.com/Ukullayappa' },
   { emoji: '📊', title: 'Dashboard Project', desc: 'An analytics dashboard with data visualization and user authentication.', tags: ['React', 'Bootstrap', 'REST API'], github: 'https://github.com/Ukullayappa' },
-  { emoji: '🛒', title: 'E-Commerce App', desc: 'A full-featured online store with cart, auth, and payment integration.', tags: ['React', 'Node.js', 'PostgreSQL'], github: 'https://github.com/Ukullayappa' },
 ]
 
 /* ── Styles shared across both card types ── */
