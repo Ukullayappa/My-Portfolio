@@ -2,11 +2,6 @@ import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { FaGithub, FaExternalLinkAlt, FaPlus, FaCode } from 'react-icons/fa'
-
-// ────────────────────────────────────────────────────────────
-// 👇 ADD YOUR PROJECTS HERE when ready
-// Just copy the template object and fill in your details
-// ────────────────────────────────────────────────────────────
 const projects = [
   {
     title: 'E-Commerce App',
