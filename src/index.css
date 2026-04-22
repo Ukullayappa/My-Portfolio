@@ -213,11 +213,3 @@ footer { background: var(--navy); color: rgba(255,255,255,0.7); }
   .profile-photo, .profile-photo-placeholder { width: 240px; height: 280px; }
   .section-padding { padding: 60px 0; }
 }
-.profile-photo {
-  width: 240px;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 5px solid white;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
