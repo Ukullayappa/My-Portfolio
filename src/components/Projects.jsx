@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap'
 import { FaArrowRight, FaExternalLinkAlt, FaGithub, FaLayerGroup, FaServer, FaChevronDown } from 'react-icons/fa'
 
@@ -29,9 +29,12 @@ const projects = [
   {
     title: 'Analytics Dashboard',
     description:
-      'A dashboard-style interface with data cards, reporting views, and modern responsive layout patterns built on REST API data.',
-    tags: ['React', 'Bootstrap', 'REST API'],
-    status: 'In Progress',
+      'A comprehensive full-stack dashboard featuring real-time data visualization, secure user authentication, and advanced reporting capabilities.',
+    tags: ['React', 'Bootstrap', 'Node.js', 'REST API'],
+    frontendRepo: 'https://github.com/Ukullayappa/Analytics-Dashboard-frontend.git',
+    backendRepo: 'https://github.com/Ukullayappa/Analytics-Dashboard-backend.git',
+    live: 'https://analytics-dashboard-eight-orcin.vercel.app/',
+    status: 'Live Project',
     number: '03',
   },
 ]
@@ -230,8 +233,12 @@ function StatusBadge({ status }) {
   )
 }
 
-function CodeDropdown({ frontendRepo, backendRepo }) {
+function CodeDropdown({ frontendRepo, backendRepo, onToggle }) {
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (onToggle) onToggle(open);
+  }, [open, onToggle]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -242,29 +249,32 @@ function CodeDropdown({ frontendRepo, backendRepo }) {
         <FaGithub size={12} /> Code <FaChevronDown size={8} style={{ opacity: 0.5 }} />
       </button>
       {open && (
-        <div style={styles.dropdown} onClick={(e) => e.stopPropagation()}>
-          <a
-            href={frontendRepo}
-            target="_blank"
-            rel="noreferrer"
-            style={styles.dropdownItem}
-            onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            <FaLayerGroup size={11} style={{ color: '#6366f1' }} /> Frontend
-          </a>
-          <div style={styles.dropdownSep} />
-          <a
-            href={backendRepo}
-            target="_blank"
-            rel="noreferrer"
-            style={styles.dropdownItem}
-            onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            <FaServer size={11} style={{ color: '#6366f1' }} /> Backend
-          </a>
-        </div>
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setOpen(false)} />
+          <div style={styles.dropdown} onClick={(e) => e.stopPropagation()}>
+            <a
+              href={frontendRepo}
+              target="_blank"
+              rel="noreferrer"
+              style={styles.dropdownItem}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <FaLayerGroup size={11} style={{ color: '#6366f1' }} /> Frontend
+            </a>
+            <div style={styles.dropdownSep} />
+            <a
+              href={backendRepo}
+              target="_blank"
+              rel="noreferrer"
+              style={styles.dropdownItem}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <FaServer size={11} style={{ color: '#6366f1' }} /> Backend
+            </a>
+          </div>
+        </>
       )}
     </div>
   )
@@ -272,23 +282,23 @@ function CodeDropdown({ frontendRepo, backendRepo }) {
 
 function ProjectCard({ item, index, inView }) {
   const [hovered, setHovered] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   return (
-    <Col lg={4} md={6} className="d-flex">
+    <Col lg={4} md={6} className="d-flex" style={{ zIndex: dropdownOpen ? 100 : 1 }}>
       <motion.div
         className="w-100"
         initial={{ opacity: 0, y: 24 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.45, delay: index * 0.1 }}
         style={{ height: '100%' }}
-        onClick={() => {}}
       >
         <div
           style={{
             ...styles.card,
             height: '100%',
-            boxShadow: hovered ? '0 8px 28px rgba(99,102,241,0.10)' : 'none',
-            borderColor: hovered ? '#c7d2fe' : '#e5e7eb',
+            boxShadow: hovered || dropdownOpen ? '0 8px 28px rgba(99,102,241,0.10)' : 'none',
+            borderColor: hovered || dropdownOpen ? '#c7d2fe' : '#e5e7eb',
             transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
           }}
           onMouseEnter={() => setHovered(true)}
@@ -297,7 +307,7 @@ function ProjectCard({ item, index, inView }) {
           <div style={{ padding: '1.35rem 1.4rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
 
             {/* Top row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
               <StatusBadge status={item.status} />
               {item.live && (
                 <a
@@ -344,7 +354,11 @@ function ProjectCard({ item, index, inView }) {
                     >
                       <FaArrowRight size={10} /> Open
                     </a>
-                    <CodeDropdown frontendRepo={item.frontendRepo} backendRepo={item.backendRepo} />
+                    <CodeDropdown 
+                      frontendRepo={item.frontendRepo} 
+                      backendRepo={item.backendRepo} 
+                      onToggle={setDropdownOpen}
+                    />
                   </>
                 ) : (
                   <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>Coming soon</span>
@@ -382,10 +396,10 @@ export default function Projects() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4 }}
           >
-            <p style={styles.eyebrow}>Portfolio</p>
-            <h2 style={styles.title}>Projects</h2>
+            <p style={styles.eyebrow}>Portfolio Highlights</p>
+            <h2 style={styles.title}>Recent Projects</h2>
             <p style={{ ...styles.subtitle, maxWidth: '440px', margin: '0 auto' }}>
-              A showcase of my full-stack development work and learning journey.
+              A showcase of my full-stack development work, featuring responsive designs and robust backend integrations.
             </p>
           </motion.div>
 
