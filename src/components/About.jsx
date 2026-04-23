@@ -1,11 +1,11 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { Badge, Card, Col, Container, Row } from 'react-bootstrap'
-import { FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt, FaMicrochip } from 'react-icons/fa'
 
 const stats = [
   { value: '2026', label: 'Graduation Year', icon: <FaGraduationCap size={18} /> },
-  { value: 'ECE', label: 'Academic Background', icon: <FaCode size={18} /> },
+  { value: 'ECE', label: 'Academic Background', icon: <FaMicrochip size={18} /> },
   { value: 'Full Stack', label: 'Career Path', icon: <FaLightbulb size={18} /> },
   { value: 'Andhra Pradesh', label: 'Location', icon: <FaMapMarkerAlt size={18} /> },
 ]
