@@ -15,12 +15,15 @@ const projects = [
     status: 'Live Project',
   },
 ]
-
-const comingSoon = [
+const projects = [
   {
     title: 'Live Chat Application',
     desc: 'A real-time chat application with user authentication, instant messaging, online presence, and responsive conversation screens.',
     tags: ['React', 'Node.js', 'Socket.IO', 'Express'],
+    frontendRepo: 'https://github.com/Ukullayappa/chatapp-frontend.git',
+    backendRepo: 'https://github.com/Ukullayappa/chatapp-backend.git',
+    live: 'https://chatapp-frontend-seven-eta.vercel.app/',
+    status: 'Live Project',
   },
   {
     title: 'Analytics Dashboard',
