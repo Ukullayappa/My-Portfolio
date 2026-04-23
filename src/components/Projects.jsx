@@ -14,7 +14,6 @@ const projects = [
     live: 'https://hubelectro.vercel.app/',
     status: 'Live Project',
   },
-]
  {
     title: 'Live Chat Application',
     description:
