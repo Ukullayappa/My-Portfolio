@@ -74,7 +74,7 @@ export default function Hero() {
               
               <Button
                 as="a"
-                href="/My-Portfolio/public/Uravakonda_Kullayappa_Resume.pdf"   
+                href="/Uravakonda_Kullayappa_Resume.pdf"   
                 download="Uravakonda_Kullayappa_Resume.pdf"
                 target="_blank"
                 rel="noreferrer"
