@@ -21,6 +21,7 @@ export default function Hero() {
       <Container>
         <Row className="align-items-center min-vh-100 py-5 g-5">
           <Col lg={6} className="text-center text-lg-start">
+
             <motion.div {...fadeUp(0.05)}>
               <Badge className="hero-intro-badge">
                 Open to internships and full-time opportunities
@@ -47,6 +48,8 @@ export default function Hero() {
             </motion.div>
 
             <motion.div {...fadeUp(0.45)} className="hero-cta-row">
+
+              {/* Hire Me */}
               <Button
                 as="a"
                 href="mailto:ukullayappa1@gmail.com"
@@ -55,6 +58,8 @@ export default function Hero() {
                 <FaEnvelope size={14} />
                 Hire Me
               </Button>
+
+              {/* GitHub */}
               <Button
                 as="a"
                 href="https://github.com/Ukullayappa"
@@ -65,10 +70,12 @@ export default function Hero() {
                 <FaGithub size={14} />
                 View Projects
               </Button>
+
+              
               <Button
                 as="a"
-                href="/My-Portfolio/public/Uravakonda_Kullayappa_Resume .pdf"
-                download="Uravakonda-Kullayappa-Resume.docx"
+                href="/My-Portfolio/public/Uravakonda_Kullayappa_Resume.pdf"   
+                download="Uravakonda_Kullayappa_Resume.pdf"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-text-google hero-resume-link"
@@ -76,10 +83,12 @@ export default function Hero() {
                 <FaDownload size={14} />
                 Download Resume
               </Button>
+
             </motion.div>
 
             <motion.div {...fadeUp(0.55)} className="hero-social-strip">
               <span className="hero-social-label">Connect</span>
+
               <a
                 href="https://linkedin.com/in/u-kullayappa-57a326368"
                 target="_blank"
@@ -88,6 +97,7 @@ export default function Hero() {
               >
                 <FaLinkedin />
               </a>
+
               <a
                 href="https://github.com/Ukullayappa"
                 target="_blank"
@@ -96,14 +106,17 @@ export default function Hero() {
               >
                 <FaGithub />
               </a>
+
               <a href="mailto:ukullayappa1@gmail.com" className="btn-icon-google">
                 <FaEnvelope />
               </a>
             </motion.div>
+
           </Col>
 
           <Col lg={6}>
             <motion.div {...fadeUp(0.35)} className="hero-profile-shell">
+
               <div className="hero-photo-frame hero-photo-frame-standalone">
                 <img
                   src={profileImg}
@@ -119,10 +132,14 @@ export default function Hero() {
                 className="hero-graduate-badge"
               >
                 <span>Professional Status</span>
-                <strong>2026 Graduate in B.Tech Electronics and Communication Engineering</strong>
+                <strong>
+                  2026 Graduate in B.Tech Electronics and Communication Engineering
+                </strong>
               </motion.div>
+
             </motion.div>
           </Col>
+
         </Row>
       </Container>
     </section>
