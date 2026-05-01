@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Badge, Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 import { FaCheckCircle, FaEnvelopeOpenText, FaFilter, FaInbox, FaPowerOff, FaSearch, FaSyncAlt, FaTrashAlt } from 'react-icons/fa'
 
-const API = 'https://portfolio-backend-p9b8.onrender.com/api/messages'
+const API = '${import.meta.env.VITE_API_URL}/api/messages'
 
 function Toast({ msg, visible, isError }) {
   return (
