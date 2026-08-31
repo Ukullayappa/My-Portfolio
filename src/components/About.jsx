@@ -1,12 +1,12 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { Badge, Card, Col, Container, Row } from 'react-bootstrap'
-import { FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt, FaMicrochip } from 'react-icons/fa'
+import { FaBriefcase, FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt, FaRobot } from 'react-icons/fa'
 
 const stats = [
-  { value: '2026', label: 'Graduation Year', icon: <FaGraduationCap size={18} /> },
-  { value: 'ECE', label: 'Academic Background', icon: <FaMicrochip size={18} /> },
-  { value: 'Full Stack', label: 'Career Path', icon: <FaLightbulb size={18} /> },
+  { value: '7.8', label: 'B.Tech CGPA (ECE)', icon: <FaGraduationCap size={18} /> },
+  { value: '1+', label: 'Internship Experience', icon: <FaBriefcase size={18} /> },
+  { value: 'AI/GenAI', label: 'Career Path', icon: <FaRobot size={18} /> },
   { value: 'Andhra Pradesh', label: 'Location', icon: <FaMapMarkerAlt size={18} /> },
 ]
 
@@ -25,29 +25,33 @@ export default function About() {
               transition={{ duration: 0.7 }}
             >
               <p className="section-subtitle">Get To Know Me</p>
-              <h2 className="section-title">A developer focused on learning fast and building well</h2>
+              <h2 className="section-title">An AI/GenAI engineer focused on building intelligent, production-ready software</h2>
               <div className="section-divider" />
 
               <p className="section-copy">
-                I'm <strong>Uravakonda Kullayappa</strong>, a B.Tech Electronics and
-                Communication Engineering student preparing to graduate in 2026 and
-                actively building a strong career in software development.
+                I'm <strong>Uravakonda Kullayappa</strong>, an early-career Software Engineer
+                with hands-on experience building AI-powered and agentic applications
+                using Python, FastAPI, LangChain, and LangGraph, alongside a solid
+                foundation in full-stack web development.
               </p>
               <p className="section-copy">
-                My academic background gave me discipline and analytical thinking,
-                while my hands-on development journey helped me build practical
-                skills in React, Bootstrap, Node.js, Express, and PostgreSQL.
+                I've built and shipped projects spanning <strong>LLM-driven agent workflows, RAG,
+                prompt engineering, and REST API design</strong>, including a stateful trip-planning
+                agent and an AI job-search automation platform. I also completed a
+                <strong> Web Development Internship at SQROCK IT Solutions</strong>, where I independently
+                built a web application using React.js, Node.js, and PostgreSQL.
               </p>
               <p className="section-copy mb-4">
-                I enjoy turning ideas into clean, responsive products and I'm looking
-                for opportunities where I can contribute, learn quickly, and grow into
-                a high-impact engineering role.
+                My B.Tech in Electronics & Communication Engineering (CGPA 7.8/10)
+                gave me discipline and analytical thinking, and I enjoy turning ideas
+                into working AI-powered products &mdash; from agent orchestration to
+                the APIs and interfaces that support them.
               </p>
 
               <div className="d-flex flex-wrap gap-2">
+                <Badge className="about-badge-pill">AI/GenAI Engineer</Badge>
                 <Badge className="about-badge-pill">Quick Learner</Badge>
                 <Badge className="about-badge-pill">Problem Solver</Badge>
-                <Badge className="about-badge-pill">Team Player</Badge>
                 <Badge className="about-badge-pill">Career Ready</Badge>
               </div>
             </motion.div>
@@ -83,11 +87,13 @@ export default function About() {
                 <Card.Body>
                   <div className="about-summary-top">
                     <span>Current Focus</span>
-                    <strong>Internships - Entry-level roles - Freelance projects</strong>
+                    <strong>AI/GenAI Roles &middot; Full-Stack Development &middot; Agentic AI Applications</strong>
                   </div>
                   <p>
-                    Building portfolio-quality interfaces, backend APIs, and complete
-                    CRUD applications with a strong focus on clean UI and practical development skills.
+                    Building AI-powered and agentic applications with Python, FastAPI,
+                    LangChain, and LangGraph &mdash; alongside full-stack products using
+                    React.js, Node.js, and PostgreSQL. Shipped projects include a
+                    stateful trip-planning agent and an AI job-search automation platform.
                   </p>
                 </Card.Body>
               </Card>
