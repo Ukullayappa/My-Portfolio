@@ -90,7 +90,7 @@ export default function Hero() {
               <span className="hero-social-label">Connect</span>
 
               <a
-                href="https://linkedin.com/in/u-kullayappa-57a326368"
+                href="https://linkedin.com/in/uravakonda-kullayappa-57a326368"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-icon-google"

@@ -3,7 +3,7 @@ import { FaEnvelope, FaGithub, FaHeart, FaLinkedin } from 'react-icons/fa'
 
 const links = [
   { icon: <FaGithub size={16} />, href: 'https://github.com/Ukullayappa' },
-  { icon: <FaLinkedin size={16} />, href: 'https://linkedin.com/in/u-kullayappa-57a326368' },
+  { icon: <FaLinkedin size={16} />, href: 'https://linkedin.com/in/uravakonda-kullayappa-57a326368' },
   { icon: <FaEnvelope size={16} />, href: 'mailto:ukullayappa1@gmail.com' },
 ]
 

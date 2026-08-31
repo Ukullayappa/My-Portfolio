@@ -165,7 +165,7 @@ export default function Navbar() {
 
           <div className="d-none d-md-flex align-items-center ms-auto" style={{ gap: 12 }}>
             <a
-              href="https://linkedin.com/in/u-kullayappa-57a326368"
+              href="https://linkedin.com/in/uravakonda-kullayappa-57a326368"
               target="_blank"
               rel="noreferrer"
               style={{

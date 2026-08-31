@@ -26,7 +26,7 @@ export default function Contact() {
 
   const contactInfo = [
     { icon: <FaEnvelope size={18} />, label: 'Email', value: 'ukullayappa1@gmail.com', href: 'mailto:ukullayappa1@gmail.com' },
-    { icon: <FaLinkedin size={18} />, label: 'LinkedIn', value: 'u-kullayappa-57a326368', href: 'https://linkedin.com/in/u-kullayappa-57a326368' },
+    { icon: <FaLinkedin size={18} />, label: 'LinkedIn', value: 'uravakonda-kullayappa-57a326368', href: 'https://linkedin.com/in/uravakonda-kullayappa-57a326368' },
     { icon: <FaMapMarkerAlt size={18} />, label: 'Location', value: 'Andhra Pradesh, India', href: null },
   ]
 
