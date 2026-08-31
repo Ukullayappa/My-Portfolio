@@ -5,7 +5,7 @@ import { FaBriefcase, FaCode, FaGraduationCap, FaLightbulb, FaMapMarkerAlt, FaRo
 
 const stats = [
   { value: '7.8', label: 'B.Tech CGPA (ECE)', icon: <FaGraduationCap size={18} /> },
-  { value: '1+', label: 'Internship Experience', icon: <FaBriefcase size={18} /> },
+  { value: '1 Mo', label: 'Internship Experience', icon: <FaBriefcase size={18} /> },
   { value: 'AI/GenAI', label: 'Career Path', icon: <FaRobot size={18} /> },
   { value: 'Andhra Pradesh', label: 'Location', icon: <FaMapMarkerAlt size={18} /> },
 ]
